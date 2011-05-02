@@ -3,9 +3,8 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from reviewboard.scmtools.managers import RepositoryManager
+from reviewboard.scmtools.managers import RepositoryManager, ToolManager
 from reviewboard.site.models import LocalSite
-
 
 class Tool(models.Model):
     name = models.CharField(max_length=32, unique=True)
@@ -15,6 +14,8 @@ class Tool(models.Model):
         lambda x: x.get_scmtool_class().supports_authentication)
     supports_raw_file_urls = property(
         lambda x: x.get_scmtool_class().supports_raw_file_urls)
+
+    objects = ToolManager()
 
     def __unicode__(self):
         return self.name
@@ -35,6 +36,9 @@ class Tool(models.Model):
         except AttributeError:
             raise ImproperlyConfigured, \
                 'Module "%s" does not define a "%s" SCM Tool' % (module, attr)
+
+    def natural_key(self):
+        return (self.class_name,)
 
     class Meta:
         ordering = ("name",)

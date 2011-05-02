@@ -25,3 +25,10 @@ class RepositoryManager(Manager):
         return (user.has_perm('scmtools.create_repository') or
                 (local_site and
                  local_site.admins.filter(pk=user.pk).exists()))
+
+
+class ToolManager(Manager):
+    """A manager for SCM Tool model"""
+    def get_by_natural_key(self, class_name):
+        """Return a scm for a given class name"""
+        return self.get(class_name=class_name)
